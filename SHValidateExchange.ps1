@@ -5,7 +5,15 @@ Nabil LAKHNACHFI
 OCWS
 #>
 
-
+function CleanupAndFail($strMsg)
+{
+    if ($strMsg)
+    {
+        PrintError($strMsg);
+    }
+    Cleanup
+    exit 1
+}
 
 $strUpn = Read-Host "What is the email address to Validate?"
 if (!$strUpn.Contains('@'))
@@ -118,3 +126,15 @@ $blockingRules = Get-ActiveSyncDeviceAccessRule | where {($_.AccessLevel -eq 'Bl
 Validate -Test "Windows mail devices are not blocked or quarantined" -Condition ($blockingRules -eq $null -or $blockingRules.Length -eq 0) -FailureMsg "DeviceType Windows Mail is accessible - devices are blocked or quaratined - the surface hub will not be able to send mail or sync its calendar."
 
 ## End Exchange ##
+
+## Summary ##
+
+$global:iTotalTests = ($global:iTotalFailures + $global:iTotalPasses + $global:iTotalWarnings)
+
+Write-Host -NoNewline $global:iTotalTests "tests executed: "
+Write-Host -NoNewline -ForegroundColor Red $Global:iTotalFailures "failures "
+Write-Host -NoNewline -ForegroundColor Yellow $Global:iTotalWarnings "warnings "
+Write-Host -ForegroundColor Green $Global:iTotalPasses "passes "
+
+## End Summary ##
+
