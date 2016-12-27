@@ -20,21 +20,13 @@ if (!$strUpn.Contains('@'))
 {
     CleanupAndFail "$strUpn is not a valid email address"
 }
-$strExServer = Read-Host "Enter the exchange server DNS name? "
-$credEx = Get-Credential -Message "Please provide exchange user credentials"
 
 $mailbox = $null
-try 
-{
-    $mailbox = Get-Mailbox -Identity $strUpn
-} 
-catch
-{   
-}
+$mailbox = Get-Mailbox -Identity $strUpn
 
 if (!$mailbox)
 {
-    "Account exists check failed. Unable to find the mailbox for $strUpn - please make sure the Exchange account exists on $strExServer"
+    "Account exists check failed. Unable to find the mailbox for $strUpn - please make sure the Exchange account exists"
 }
 
 $exchange = Get-ExchangeServer
@@ -43,10 +35,10 @@ if (!$exchange.IsE14OrLater)
     CleanupAndFail "A compatible exchange server version was not found. Please use at least exchange 2010."
 }
 
-$strAlias = $mailbox.Alias
-$strDisplayName = $mailbox.DisplayName
 
-$strLinkedAccount = $strLinkedDomain = $strLinkedUser = $strLinkedServer = $null
+$Global:iTotalFailures = 0
+$global:iTotalWarnings = 0
+$Global:iTotalPasses = 0
 
 function Validate()
 {
