@@ -5,6 +5,10 @@ Nabil LAKHNACHFI
 OCWS
 #>
 
+#file path
+$date=(Get-Date).ToString('yyyy-MM-dd')
+$logFilePath=$PSScriptRoot+"\LogSHValidateSfBfr-"+$date+".txt"
+
 function CleanupAndFail($strMsg)
 {
     if ($strMsg)
@@ -18,6 +22,7 @@ function CleanupAndFail($strMsg)
 $strUpn = Read-Host "What is the email address to Validate?"
 if (!$strUpn.Contains('@'))
 {
+    Out-file -filePath $logFilePath -append "$strUpn is not a valid email address"
     CleanupAndFail "$strUpn is not a valid email address"
 }
 
@@ -26,19 +31,23 @@ $mailbox = Get-Mailbox -Identity $strUpn
 
 if (!$mailbox)
 {
-    "Account exists check failed. Unable to find the mailbox for $strUpn - please make sure the Exchange account exists"
+    Out-file -filePath $logFilePath -append "Account exists check failed. Unable to find the mailbox for $strUpn - please make sure the Exchange account exists"
+    CleanupAndFail "Account exists check failed. Unable to find the mailbox for $strUpn - please make sure the Exchange account exists"
 }
 
 $exchange = Get-ExchangeServer
 if (!$exchange.IsE14OrLater)
 {
-    CleanupAndFail "A compatible exchange server version was not found. Please use at least exchange 2010."
+    Out-file -filePath $logFilePath -append "A compatible exchange server version was not found. Please use at least exchange 2010."
+    CleanupAndFail "A compatible exchange server version was not found. Please use at least exchange 2010." 
 }
 
 
 $Global:iTotalFailures = 0
 $global:iTotalWarnings = 0
 $Global:iTotalPasses = 0
+
+
 
 function Validate()
 {
@@ -126,10 +135,14 @@ Validate -Test "Windows mail devices are not blocked or quarantined" -Condition 
 
 $global:iTotalTests = ($global:iTotalFailures + $global:iTotalPasses + $global:iTotalWarnings)
 
-Write-Host -NoNewline $global:iTotalTests "tests executed: "
-Write-Host -NoNewline -ForegroundColor Red $Global:iTotalFailures "failures "
-Write-Host -NoNewline -ForegroundColor Yellow $Global:iTotalWarnings "warnings "
-Write-Host -ForegroundColor Green $Global:iTotalPasses "passes "
+Write-Host -NoNewline $global:iTotalTests "tests realises: "
+Out-file -filePath $logFilePath -append ($global:iTotalTests "tests realises: ")
+Write-Host -NoNewline -ForegroundColor Red $Global:iTotalFailures "echecs "
+Out-file -filePath $logFilePath -append ($Global:iTotalFailures "echecs ")
+Write-Host -NoNewline -ForegroundColor Yellow $Global:iTotalWarnings "avertissements "
+Out-file -filePath $logFilePath -append ($Global:iTotalWarnings "avertissements ")
+Write-Host -ForegroundColor Green $Global:iTotalPasses "reussis "
+Out-file -filePath $logFilePath -append ($Global:iTotalPasses "reussis ")
 
 ## End Summary ##
 
