@@ -52,19 +52,22 @@ function Validate()
     Write-Host -NoNewline -ForegroundColor White $Test.PadRight(100,'.')
     if ($Condition)
     {
-        Write-Host -ForegroundColor Green "Passed"
+        Write-Host -ForegroundColor Green "Reussi"
+        Out-file -filePath $logFilePath -append "Reussi"
         $global:iTotalPasses++
     }
     else
     {
         if ($WarningOnly)
         {
-            Write-Host -ForegroundColor Yellow ("Warning: "+$FailureMsg)
+            Write-Host -ForegroundColor Yellow ("Avertissement: "+$FailureMsg)
+            Out-file -filePath $logFilePath -append ("Avertissement: "+$FailureMsg)
             $global:iTotalWarnings++
         }
         else
         {
-            Write-Host -ForegroundColor Red ("Failed: "+$FailureMsg)
+            Write-Host -ForegroundColor Red ("Echec: "+$FailureMsg)
+            Out-file -filePath $logFilePath -append ("Echec: "+$FailureMsg)
             $global:iTotalFailures++
         }
     }
