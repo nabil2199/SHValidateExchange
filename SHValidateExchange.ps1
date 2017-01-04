@@ -41,7 +41,8 @@ $global:iTotalWarnings = 0
 $Global:iTotalPasses = 0
 
 #file path
-$logFilePath=$PSScriptRoot+"\LogSHValidateSfBfr.txt"
+$date=(Get-Date).ToString('yyyy-MM-dd')
+$logFilePath=$PSScriptRoot+"\LogSHValidateSfBfr"+$date+".txt"
 
 function Validate()
 {
