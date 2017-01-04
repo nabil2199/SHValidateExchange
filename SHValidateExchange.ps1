@@ -40,6 +40,9 @@ $Global:iTotalFailures = 0
 $global:iTotalWarnings = 0
 $Global:iTotalPasses = 0
 
+#file path
+$logFilePath=$PSScriptRoot+"\LogSHValidateSfBfr.txt"
+
 function Validate()
 {
     Param(
@@ -126,10 +129,14 @@ Validate -Test "Windows mail devices are not blocked or quarantined" -Condition 
 
 $global:iTotalTests = ($global:iTotalFailures + $global:iTotalPasses + $global:iTotalWarnings)
 
-Write-Host -NoNewline $global:iTotalTests "tests executed: "
-Write-Host -NoNewline -ForegroundColor Red $Global:iTotalFailures "failures "
-Write-Host -NoNewline -ForegroundColor Yellow $Global:iTotalWarnings "warnings "
-Write-Host -ForegroundColor Green $Global:iTotalPasses "passes "
+Write-Host -NoNewline $global:iTotalTests "tests realises: "
+Out-file -filePath $logFilePath -append ($global:iTotalTests "tests realises: ")
+Write-Host -NoNewline -ForegroundColor Red $Global:iTotalFailures "echecs "
+Out-file -filePath $logFilePath -append ($Global:iTotalFailures "echecs ")
+Write-Host -NoNewline -ForegroundColor Yellow $Global:iTotalWarnings "avertissements "
+Out-file -filePath $logFilePath -append ($Global:iTotalWarnings "avertissements ")
+Write-Host -ForegroundColor Green $Global:iTotalPasses "reussis "
+Out-file -filePath $logFilePath -append ($Global:iTotalPasses "reussis ")
 
 ## End Summary ##
 
