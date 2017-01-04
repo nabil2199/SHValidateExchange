@@ -5,6 +5,10 @@ Nabil LAKHNACHFI
 OCWS
 #>
 
+#file path
+$date=(Get-Date).ToString('yyyy-MM-dd')
+$logFilePath=$PSScriptRoot+"\LogSHValidateSfBfr-"+$date+".txt"
+
 function CleanupAndFail($strMsg)
 {
     if ($strMsg)
@@ -18,6 +22,7 @@ function CleanupAndFail($strMsg)
 $strUpn = Read-Host "What is the email address to Validate?"
 if (!$strUpn.Contains('@'))
 {
+    Out-file -filePath $logFilePath -append "$strUpn is not a valid email address"
     CleanupAndFail "$strUpn is not a valid email address"
 }
 
@@ -26,13 +31,15 @@ $mailbox = Get-Mailbox -Identity $strUpn
 
 if (!$mailbox)
 {
-    "Account exists check failed. Unable to find the mailbox for $strUpn - please make sure the Exchange account exists"
+    Out-file -filePath $logFilePath -append "Account exists check failed. Unable to find the mailbox for $strUpn - please make sure the Exchange account exists"
+    CleanupAndFail "Account exists check failed. Unable to find the mailbox for $strUpn - please make sure the Exchange account exists"
 }
 
 $exchange = Get-ExchangeServer
 if (!$exchange.IsE14OrLater)
 {
-    CleanupAndFail "A compatible exchange server version was not found. Please use at least exchange 2010."
+    Out-file -filePath $logFilePath -append "A compatible exchange server version was not found. Please use at least exchange 2010."
+    CleanupAndFail "A compatible exchange server version was not found. Please use at least exchange 2010." 
 }
 
 
@@ -40,9 +47,7 @@ $Global:iTotalFailures = 0
 $global:iTotalWarnings = 0
 $Global:iTotalPasses = 0
 
-#file path
-$date=(Get-Date).ToString('yyyy-MM-dd')
-$logFilePath=$PSScriptRoot+"\LogSHValidateSfBfr-"+$date+".txt"
+
 
 function Validate()
 {
